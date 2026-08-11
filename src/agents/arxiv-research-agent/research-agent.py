@@ -10,7 +10,6 @@ import arxiv
 from llama_index.core import Document
 from llama_index.llms.anthropic import Anthropic
 from llama_index.core.agent.workflow import FunctionAgent # tool-calling agent from llamaindex
-from llama_index.tools.arxiv import ArxivToolSpec
 from llama_index.core.workflow import Context
 from llama_index.core.workflow import JsonPickleSerializer
 from llama_index.core.agent.workflow import AgentStream

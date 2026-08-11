@@ -1,0 +1,6 @@
+llama-index-core 
+llama-index-llms-anthropic
+python-dotenv
+python-weather
+llama-index-readers-file
+arxiv
