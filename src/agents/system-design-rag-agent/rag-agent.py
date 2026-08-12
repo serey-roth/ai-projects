@@ -7,11 +7,12 @@ import asyncio
 import os
 from pathlib import Path
 
-from llama_index.core import Settings, VectorStoreIndex
+from utils.load_dot_env import load_env_dev
+load_env_dev()
 
 # -- Load, index, and store data --
 # SimpleDirectoryReader only captures text (i.e. text resources)
-from llama_index.core import SimpleDirectoryReader
+from llama_index.core import Settings, SimpleDirectoryReader
 from llama_index.readers.file import PDFReader
 from llama_index.core import VectorStoreIndex
 from llama_index.vector_stores.chroma import ChromaVectorStore
@@ -31,7 +32,7 @@ KV_STORE_PATH = Path(__file__).resolve().parent / "kv-store.json"
 
 Settings.embed_model = HuggingFaceEmbedding(
     model_name="BAAI/bge-small-en-v1.5",
-    device="cpu"
+    device="cpu",
 )
 
 async def ingest_docs():
@@ -80,24 +81,65 @@ async def ingest_docs():
     return index
 
 # -- Query --
-from utils.load_dot_env import load_env_dev
-load_env_dev()
 
 from llama_index.llms.anthropic import Anthropic
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.chat_engine.types import BaseChatEngine
 
-async def run_query(index: VectorStoreIndex, msg: str):
+memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
+
+def create_chat_engine(index: VectorStoreIndex):
     llm = Anthropic(
-        model="claude-haiku-4-5", 
-        max_tokens=1024, 
-        temperature=0.1
+            model="claude-haiku-4-5", 
+            max_tokens=1024, 
+            temperature=0.1
+        )
+        
+    chat_engine = index.as_chat_engine(
+        llm=llm,
+        chat_mode="condense_plus_context",
+        memory=memory,
+        context_prompt=(
+            """
+            You are an expert tutor in system design for technical software engineering interviews. Your goal is to help the current user
+            learn and improve their knowledge in system design."
+            "Here are the relevant documents for the context:\n"
+            "{context_str}"
+            "\nInstruction: Use the previous chat history, or the context above, to interact and help the user."
+            """
+        ),
+        verbose=False,
     )
     
-    query_engine = index.as_query_engine(llm=llm)
-    
-    response = await query_engine.aquery(msg)
-    print(response)
-    
+    return chat_engine 
     
 if __name__ == "__main__":
+    print("Ingesting docs...")
     index = asyncio.run(ingest_docs())
-    asyncio.run(run_query(index=index, msg="what are ways I can improve the latency of my db reads when the throughput is around 100K for 1M users"))
+    
+    print("Loading chat engine...")
+    chat_engine = create_chat_engine(index)
+
+    async def ask_question(chat_engine: BaseChatEngine, message: str):
+        print("Agent is thinking...", end="", flush=True)
+        
+        response = await chat_engine.astream_chat(message)
+        has_started_responding = False
+        
+        async for token in response.async_response_gen():
+            if (has_started_responding is not True):
+                print("\r\033[KAgent: ", end="", flush=True)
+                has_started_responding = True
+                
+            print(token, end="", flush=True)
+                
+    print("Agent is ready!")
+    print("Hi, what system design question do you have today?")
+    while True:
+        query = input("You (enter q to exit): ")
+        if query.lower() == "q":
+            print("Ok, goodbye!")
+            break
+        
+        asyncio.run(ask_question(chat_engine=chat_engine, message=query))
+        print()
