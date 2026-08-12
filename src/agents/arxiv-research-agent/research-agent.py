@@ -12,7 +12,7 @@ from llama_index.core.workflow import Context
 from llama_index.core.workflow import JsonPickleSerializer
 from llama_index.core.agent.workflow import AgentStream
 
-from utils import load_env_dev
+from utils.load_dot_env import load_env_dev
 load_env_dev()
 
 CTX_FILE_PATH = Path(__file__).resolve().parent / "agent-ctx.json"

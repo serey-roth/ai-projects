@@ -51,7 +51,7 @@ def index_documents_and_store(docs: Sequence[Document]):
     return index
 
 # -- Query --
-from utils import load_env_dev
+from utils.load_dot_env import load_env_dev
 load_env_dev()
 
 from llama_index.llms.anthropic import Anthropic
