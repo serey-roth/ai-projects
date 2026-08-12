@@ -10,6 +10,15 @@ from pathlib import Path
 from utils.load_dot_env import load_env_dev
 load_env_dev()
 
+# -- Set up tracing and observability --
+from openinference.instrumentation.llama_index import LlamaIndexInstrumentor
+from phoenix.otel import register
+
+tracer_provider = register(project_name="system-design-rag-agent", protocol="http/protobuf")
+LlamaIndexInstrumentor().instrument(
+    tracer_provider=tracer_provider
+)
+
 # -- Load, index, and store data --
 # SimpleDirectoryReader only captures text (i.e. text resources)
 from llama_index.core import Settings, SimpleDirectoryReader
