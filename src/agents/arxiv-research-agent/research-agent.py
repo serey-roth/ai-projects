@@ -1,10 +1,8 @@
 import asyncio
 import json
-import os
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv
 import arxiv
 
 from llama_index.core import Document
@@ -14,8 +12,8 @@ from llama_index.core.workflow import Context
 from llama_index.core.workflow import JsonPickleSerializer
 from llama_index.core.agent.workflow import AgentStream
 
-ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env.local"
-load_dotenv(ENV_PATH)
+from utils import load_env_dev
+load_env_dev()
 
 CTX_FILE_PATH = Path(__file__).resolve().parent / "agent-ctx.json"
     

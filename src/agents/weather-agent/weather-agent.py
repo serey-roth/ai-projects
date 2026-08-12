@@ -2,14 +2,14 @@ import argparse
 import asyncio
 from dataclasses import dataclass
 
-from dotenv import load_dotenv
 from llama_index.llms.anthropic import Anthropic
 from llama_index.core.llms import ChatMessage
 from llama_index.core.agent.workflow import FunctionAgent # tool-calling agent from llamaindex
 
 import python_weather
 
-load_dotenv(".env.local")
+from llama_index.llms.anthropic import Anthropic
+
 
 @dataclass
 class WeatherForecast:
