@@ -495,9 +495,15 @@ def _convert_pdf_to_docling(
     return result.document
 
 
-def convert_pdf_to_markdown(pdf_file_path: Path) -> str:
+def convert_pdf_to_markdown(
+    pdf_file_path: Path,
+    do_picture_enrichment: Optional[bool] = False, 
+) -> str:
     with time_perf("convert_pdf_to_markdown"):
-        document = _convert_pdf_to_docling(pdf_file_path)
+        document = _convert_pdf_to_docling(
+            pdf_file_path=pdf_file_path, 
+            do_picture_enrichment=do_picture_enrichment
+        )
         
         print(f"[docling] rendering markdown for {pdf_file_path.name}...")
         return _render_markdown(document, pdf_file_path)
