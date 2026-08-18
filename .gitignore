@@ -1,4 +1,6 @@
 .env.local
 venv/*
-**/chroma-db/
+**/chroma_db/
 **/__pycache__
+**/embedded_doc_store.json
+**/kv-store
