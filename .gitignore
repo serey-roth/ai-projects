@@ -5,3 +5,4 @@ venv/*
 **/embedded_doc_store.json
 **/kv-store
 **/storage_context/**.*
+**/.deepeval
