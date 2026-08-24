@@ -25,7 +25,6 @@ The nodes are then indexed into a local `ChromaDB` vector store, with document t
 ## Query and Retrieval
 
 As of now, we're using `llamaindex`'s pre-built chat engine with `condense_plus_context` mode. That said, we might configure the engine ourselves as early evals have indicated poor context retrieval. With `top-k=2` and similarity threshold of 0.5, the retrieved context contains
-a lot of noise and irrelevant info. That is our current task, to improve context through evaluations. 
+a lot of noise and irrelevant info. That is our current task, to improve context through evaluations.
 
-Evaluations is currently done through `deepeval` with 2 metrics: `AnswerRelevancy` and `ContextualRelevancy`. 
-
+Evaluations is currently done through `deepeval` with 2 metrics: `AnswerRelevancy` and `ContextualRelevancy`.
